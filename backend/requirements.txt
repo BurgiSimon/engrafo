@@ -1,4 +1,7 @@
 docling
+# RapidOCR (Docling's bundled OCR engine) needs its ONNX Runtime backend;
+# without it OCR/image inputs fail with "Unsupported configuration: torch.PP-OCRv6...".
+onnxruntime
 fastapi
 uvicorn[standard]
 python-multipart
