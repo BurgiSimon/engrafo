@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from docling.datamodel.base_models import InputFormat
-from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.datamodel.pipeline_options import PdfPipelineOptions, RapidOcrOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types.doc import ImageRefMode
 
@@ -54,6 +54,12 @@ def _build_converter(
     opts = PdfPipelineOptions()
     opts.do_ocr = do_ocr
     opts.do_table_structure = do_tables
+    # Pin RapidOCR to its ONNX Runtime backend. RapidOCR is Docling's bundled
+    # default engine, but if onnxruntime isn't importable it silently falls back
+    # to a PyTorch backend that lacks the PP-OCR model URLs and raises
+    # "Unsupported configuration: torch.PP-OCRv6.det.small". Being explicit keeps
+    # OCR (and image inputs, which always require OCR) working deterministically.
+    opts.ocr_options = RapidOcrOptions(backend="onnxruntime")
     if gen_images:
         opts.generate_picture_images = True
         opts.images_scale = 2.0
